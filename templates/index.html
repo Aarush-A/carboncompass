@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coal Mine Carbon Management</title>
+</head>
+<body>
+    <h1>Welcome to the Coal Mine Carbon Management System</h1>
+    
+    <h2>Submit Quarterly Report</h2>
+    <form action="/report" method="post">
+        <input type="hidden" name="mine_id" value="1">
+        <label for="quarter">Quarter:</label>
+        <input type="text" id="quarter" name="quarter" required><br>
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="year" required><br>
+    
+        <!-- General Mine Information -->
+        <h3>General Mine Information</h3>
+        <label for="excavation_emission">Excavation Emission (tons):</label>
+        <input type="number" id="excavation_emission" name="excavation_emission" step="any" required><br>
+        <label for="transportation_emission">Transportation Emission (tons):</label>
+        <input type="number" id="transportation_emission" name="transportation_emission" step="any" required><br>
+        <label for="equipment_emission">Equipment Emission (tons):</label>
+        <input type="number" id="equipment_emission" name="equipment_emission" step="any" required><br>
+        <label for="renewable_energy_usage">Renewable Energy Usage (%):</label>
+        <input type="number" id="renewable_energy_usage" name="renewable_energy_usage" step="any" required><br>
+        <label for="afforestation_needed">Afforestation Needed (hectares):</label>
+        <input type="number" id="afforestation_needed" name="afforestation_needed" step="any" required><br>
+        <label for="carbon_credits_earned">Carbon Credits Earned:</label>
+        <input type="number" id="carbon_credits_earned" name="carbon_credits_earned" step="any" required><br>
+        <label for="electricity_consumption">Electricity Consumption (kWh):</label>
+        <input type="number" id="electricity_consumption" name="electricity_consumption" step="any" required><br>
+        <label for="energy_source_breakdown">Energy Source Breakdown:</label>
+        <textarea id="energy_source_breakdown" name="energy_source_breakdown" required></textarea><br>
+        <label for="renewable_energy_share">Renewable Energy Share (%):</label>
+        <input type="number" id="renewable_energy_share" name="renewable_energy_share" step="any" required><br>
+        <label for="diesel_consumption">Diesel Consumption (liters):</label>
+        <input type="number" id="diesel_consumption" name="diesel_consumption" step="any" required><br>
+        <label for="gasoline_consumption">Gasoline Consumption (liters):</label>
+        <input type="number" id="gasoline_consumption" name="gasoline_consumption" step="any" required><br>
+        <label for="natural_gas_consumption">Natural Gas Consumption (cubic meters):</label>
+        <input type="number" id="natural_gas_consumption" name="natural_gas_consumption" step="any" required><br>
+        <label for="other_fuels">Other Fuels:</label>
+        <textarea id="other_fuels" name="other_fuels"></textarea><br>
+        <label for="generator_usage">Generator Usage:</label>
+        <textarea id="generator_usage" name="generator_usage"></textarea><br>
+        <label for="equipment_list">Equipment List:</label>
+        <textarea id="equipment_list" name="equipment_list"></textarea><br>
+        <label for="equipment_fuel_consumption">Equipment Fuel Consumption (liters):</label>
+        <input type="number" id="equipment_fuel_consumption" name="equipment_fuel_consumption" step="any" required><br>
+        <label for="equipment_operating_hours">Equipment Operating Hours:</label>
+        <input type="number" id="equipment_operating_hours" name="equipment_operating_hours" step="any" required><br>
+        <label for="equipment_power_rating">Equipment Power Rating (kW/HP):</label>
+        <input type="number" id="equipment_power_rating" name="equipment_power_rating" step="any" required><br>
+        <label for="fuel_type">Fuel Type:</label>
+        <input type="text" id="fuel_type" name="fuel_type" required><br>
+        <label for="maintenance_schedule">Maintenance Schedule:</label>
+        <textarea id="maintenance_schedule" name="maintenance_schedule"></textarea><br>
+        <label for="volume_extracted">Volume Extracted (cubic meters):</label>
+        <input type="number" id="volume_extracted" name="volume_extracted" step="any" required><br>
+        <label for="blasting_details">Blasting Details:</label>
+        <textarea id="blasting_details" name="blasting_details"></textarea><br>
+        <label for="processing_energy_consumption">Processing Energy Consumption:</label>
+        <input type="number" id="processing_energy_consumption" name="processing_energy_consumption" step="any" required><br>
+        <label for="waste_volume">Waste Volume:</label>
+        <input type="number" id="waste_volume" name="waste_volume" step="any" required><br>
+        <label for="water_consumption">Water Consumption (cubic meters):</label>
+        <input type="number" id="water_consumption" name="water_consumption" step="any" required><br>
+        <label for="water_source">Water Source:</label>
+        <textarea id="water_source" name="water_source"></textarea><br>
+        <label for="water_treatment">Water Treatment:</label>
+        <textarea id="water_treatment" name="water_treatment"></textarea><br>
+        <label for="other_resources">Other Resources:</label>
+        <textarea id="other_resources" name="other_resources"></textarea><br>
+        <label for="methane_capture">Methane Capture:</label>
+        <input type="text" id="methane_capture" name="methane_capture"><br>
+        <label for="methane_volume">Methane Volume (cubic meters):</label>
+        <input type="number" id="methane_volume" name="methane_volume" step="any"><br>
+        <label for="methane_efficiency">Methane Efficiency (%):</label>
+        <input type="number" id="methane_efficiency" name="methane_efficiency" step="any"><br>
+        <label for="dust_suppression">Dust Suppression:</label>
+        <textarea id="dust_suppression" name="dust_suppression"></textarea><br>
+        <label for="air_quality_data">Air Quality Data:</label>
+        <textarea id="air_quality_data" name="air_quality_data"></textarea><br>
+        <label for="ventilation_energy">Ventilation Energy (kWh):</label>
+        <input type="number" id="ventilation_energy" name="ventilation_energy" step="any"><br>
+        <label for="airflow_rate">Airflow Rate (cubic meters/hour):</label>
+        <input type="number" id="airflow_rate" name="airflow_rate" step="any"><br>
+        <label for="waste_types">Waste Types:</label>
+        <input type="text" id="waste_types" name="waste_types"><br>
+        <label for="waste_disposal_methods">Waste Disposal Methods:</label>
+        <textarea id="waste_disposal_methods" name="waste_disposal_methods"></textarea><br>
+        <label for="emissions_from_waste">Emissions from Waste (e.g., methane):</label>
+        <input type="number" id="emissions_from_waste" name="emissions_from_waste" step="any"><br>
+        <label for="carbon_sinks_area">Carbon Sinks Area (hectares):</label>
+        <input type="number" id="carbon_sinks_area" name="carbon_sinks_area" step="any"><br>
+        <label for="vegetation_type">Vegetation Type:</label>
+        <input type="text" id="vegetation_type" name="vegetation_type"><br>
+        <label for="carbon_sequestration_existing">Carbon Sequestration Existing (kg CO2/year):</label>
+        <input type="number" id="carbon_sequestration_existing" name="carbon_sequestration_existing" step="any"><br>
+        <label for="afforestation_plans">Afforestation Plans:</label>
+        <textarea id="afforestation_plans" name="afforestation_plans"></textarea><br>
+        <label for="carbon_sequestration_planned">Carbon Sequestration Planned (kg CO2/year):</label>
+        <input type="number" id="carbon_sequestration_planned" name="carbon_sequestration_planned" step="any"><br>
+        <label for="qualifying_projects">Qualifying Projects:</label>
+        <textarea id="qualifying_projects" name="qualifying_projects"></textarea><br>
+        <label for="current_carbon_credit_price">Current Carbon Credit Price:</label>
+        <input type="number" id="current_carbon_credit_price" name="current_carbon_credit_price" step="any"><br>
+        <label for="renewable_energy_projects">Renewable Energy Projects:</label>
+        <textarea id="renewable_energy_projects" name="renewable_energy_projects"></textarea><br>
+        <label for="energy_generated_renewables">Energy Generated from Renewables (kWh):</label>
+        <input type="number" id="energy_generated_renewables" name="energy_generated_renewables" step="any"><br>
+        <label for="energy_efficiency_measures">Energy Efficiency Measures:</label>
+        <textarea id="energy_efficiency_measures" name="energy_efficiency_measures"></textarea><br>
+        <label for="recycling_programs">Recycling Programs:</label>
+        <textarea id="recycling_programs" name="recycling_programs"></textarea><br>
+        <label for="recycled_material_amount">Recycled Material Amount (tons):</label>
+        <input type="number" id="recycled_material_amount" name="recycled_material_amount" step="any"><br>
+    
+        <input type="submit" value="Submit Report">
+    </form>
+</body>
+</html>
