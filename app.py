@@ -11,7 +11,7 @@ app.secret_key = 'shazam'
 api = Api(app)
 api.add_resource(user_api, '/api/user')
 api.add_resource(ReportAPI, '/api/report/<int:mine_id>')
-api.add_resource(AnalyticsAPI, '/api/analytics/<int:mine_id>')
+api.add_resource(AnalyticsAPI, '/api/analytics/<string:mine_id>')
 
 def get_db_connection():
     conn = sqlite3.connect('carbon')
@@ -32,7 +32,7 @@ def login():
         }
         res = requests.get(request.url_root + 'api/user', json=login)
         if res.status_code == 200:
-            session['username'] = login['username']
+            session["username"] = login['username']
             return redirect(url_for('report'))
         else:
             return render_template('login.html', message="Wrong Username Or Password")
@@ -111,28 +111,18 @@ def report():
         "recycled_material_amount": request.form.get("recycled_material_amount")
     }
             jsonify(data)
-            response = requests.post(request.url_root + 'api/report/' + session['username'], json=data)
-            if response.status_code == 201:
-                return redirect(url_for('analysis'))
-            else:
-                # Render the template with a failure message if the response is not successful
-                return render_template('index.html', message="Failed to submit report. Please try again.")
+            response = requests.post(request.url_root + 'api/report/' + session["username"], json=data)
+            return redirect(url_for('analysis'))
         except requests.RequestException as e:
-            # Catch any errors during the API request and provide feedback
             return render_template('index.html', message=f"An error occurred: {e}")
     else:
-        # Render the template for GET requests
         return render_template('index.html')
     
 @app.route('/analysis', methods=['POST','GET'])
 def analysis():
     mine_id = session.get('username')
-    print(mine_id)
-    response = requests.get(request.url_root + f'api/analytics/{mine_id}')
-    if response.status_code == 200:
-        return redirect(url_for('static', filename='content.pdf'))
-    else:
-        return "Analysis not available", 404
+    response = requests.post(request.url_root + 'api/analytics/' + session["username"])
+    return redirect(url_for('static', filename='data_analysis_report.pdf'))
 
 if __name__ == '__main__':
     app.run(debug=True)

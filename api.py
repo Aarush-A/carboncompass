@@ -6,7 +6,7 @@ import numpy as np
 import os
 from fpdf import FPDF
 import pandas as pd
-
+import seaborn as sns
 def connect():
     conn = sqlite3.connect('carbon')
     return conn
@@ -129,20 +129,28 @@ class ReportAPI(Resource):
             return 400
 
 class AnalyticsAPI(Resource):
-    def post(self,mine_id):
+    def post(self, mine_id):
         conn = connect()
         cursor = conn.cursor()
-        print("Database connection successful")
-        query = '''
-        SELECT * FROM quarterly_reports WHERE mine_id = ?
-            '''
-        df = pd.read_sql_query(query, conn, params=(mine_id,))
+
+        cursor.execute('''SELECT mine_id, quarter, "year", excavation_emission, transportation_emission, equipment_emission, 
+                        renewable_energy_usage, carbon_credits_earned, electricity_consumption, energy_source_breakdown, 
+                        volume_extracted
+                        FROM quarterly_reports 
+                        WHERE mine_id = ?''', (mine_id,))
+        data = cursor.fetchall()
         conn.close()
 
+        columns = ['mine_id', 'quarter', 'year', 'excavation_emission', 'transportation_emission', 
+                   'equipment_emission', 'renewable_energy_usage', 'carbon_credits_earned', 
+                   'electricity_consumption', 'energy_source_breakdown', 'volume_extracted']
+        df = pd.DataFrame(data, columns=columns)
+
         if df.empty:
-            print("khaali hai")
+            return jsonify({'message': 'No data found for this mine ID'}), 404
         
         df['quarter_year'] = df['quarter'].astype(str) + '-' + df['year'].astype(str)
+
         plt.figure(figsize=(10, 6))
         plt.plot(df['quarter_year'], df['excavation_emission'], label='Excavation Emission')
         plt.plot(df['quarter_year'], df['transportation_emission'], label='Transportation Emission')
@@ -150,12 +158,47 @@ class AnalyticsAPI(Resource):
         plt.ylabel('Emissions')
         plt.title('Emissions Over Time')
         plt.legend()
-
-        graph_path = os.path.join(static_folder, 'emissions_graph.png')
-        plt.savefig(graph_path)
+        emissions_graph_path = os.path.join(static_folder, 'emissions_graph.png')
+        plt.savefig(emissions_graph_path)
         plt.close()
 
-        # Generate PDF
+        energy_sources = df['energy_source_breakdown'].str.split(',', expand=True).stack().value_counts()
+        plt.figure(figsize=(7, 7))
+        plt.pie(energy_sources, labels=energy_sources.index, autopct='%1.1f%%', startangle=140)
+        plt.title('Energy Source Breakdown')
+        pie_chart_path = os.path.join(static_folder, 'energy_source_pie_chart.png')
+        plt.savefig(pie_chart_path)
+        plt.close()
+
+        plt.figure(figsize=(10, 6))
+        plt.bar(df['quarter_year'], df['renewable_energy_usage'], color='green')
+        plt.xlabel('Quarter-Year')
+        plt.ylabel('Renewable Energy Usage (kWh)')
+        plt.title('Renewable Energy Usage Over Time')
+        renewable_energy_path = os.path.join(static_folder, 'renewable_energy_bar_chart.png')
+        plt.savefig(renewable_energy_path)
+        plt.close()
+
+        emission_types = ['excavation_emission', 'transportation_emission', 'equipment_emission']
+        df['total_emissions'] = df[emission_types].sum(axis=1)
+        df.set_index('quarter_year')[emission_types].plot(kind='bar', stacked=True)
+        plt.xlabel('Quarter-Year')
+        plt.ylabel('Emissions')
+        plt.title('Total Emissions by Category Over Time')
+        plt.tight_layout()
+        emissions_breakdown_path = os.path.join(static_folder, 'emissions_breakdown_stacked_bar.png')
+        plt.savefig(emissions_breakdown_path)
+        plt.close()
+
+        plt.figure(figsize=(10, 8))
+        corr_matrix = df[['excavation_emission', 'transportation_emission', 'equipment_emission', 
+                          'carbon_credits_earned', 'electricity_consumption', 'renewable_energy_usage']].corr()
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+        plt.title('Correlation Between Key Metrics')
+        heatmap_path = os.path.join(static_folder, 'correlation_heatmap.png')
+        plt.savefig(heatmap_path)
+        plt.close()
+
         total_extraction = df['volume_extracted'].sum()
         average_emission = df[['excavation_emission', 'transportation_emission']].mean().mean()
 
@@ -163,12 +206,21 @@ class AnalyticsAPI(Resource):
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 10, txt="Data Analysis Report", ln=True, align='C')
-            
         pdf.cell(200, 10, txt=f"Total Volume Extracted: {total_extraction}", ln=True)
         pdf.cell(200, 10, txt=f"Average Emission: {average_emission:.2f}", ln=True)
-        pdf.image(graph_path, x=10, y=40, w=180)
-        pdf_output_path = os.path.join(static_folder, "content.pdf")
+
+        # Add graphs to the PDF
+        pdf.image(emissions_graph_path, x=10, y=40, w=180)
+        pdf.add_page()  # New page for each graph
+        pdf.image(pie_chart_path, x=10, y=10, w=180)
+        pdf.add_page()
+        pdf.image(renewable_energy_path, x=10, y=10, w=180)
+        pdf.add_page()
+        pdf.image(emissions_breakdown_path, x=10, y=10, w=180)
+        pdf.add_page()
+        pdf.image(heatmap_path, x=10, y=10, w=180)
+
+        pdf_output_path = os.path.join(static_folder, "data_analysis_report.pdf")
         pdf.output(pdf_output_path)
 
-        return jsonify({'message': 'Analysis complete, report generated.'}), 200
-        
+        return jsonify({'message': 'Analysis complete, report generated.', 'report_url': f'/{static_folder}/data_analysis_report.pdf'}), 200
